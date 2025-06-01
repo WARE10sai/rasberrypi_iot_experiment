@@ -88,7 +88,7 @@ GET /
 ## プロジェクト構造
 
 ```
-rasberrypi_iot_experiment/
+raspberrypi_iot_experiment/
 ├── main.py              # FastAPIメインアプリケーション
 ├── sensors/
 │   └── temp.py          # Sense HATセンサー制御モジュール
@@ -100,30 +100,6 @@ rasberrypi_iot_experiment/
 ├── requirements.txt    # Python依存関係
 └── README.md          # このファイル
 ```
-
-## 開発
-
-### 開発環境のセットアップ
-
-```bash
-# 開発用依存関係のインストール
-pip install -r requirements-dev.txt
-
-# テストの実行
-python -m pytest
-
-# コードフォーマット
-black .
-flake8 .
-```
-
-### 貢献方法
-
-1. このリポジトリをフォーク
-2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-5. Pull Requestを作成
 
 ## ライセンス
 
