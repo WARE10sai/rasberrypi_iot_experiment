@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sense HAT Monitor</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 2rem;
+            max-width: 320px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .value {
+            font-size: 1.25rem;
+            color: #007acc;
+            margin: 0.5rem 0;
+        }
+        .error {
+            color: #e63946;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Sense HAT Monitor</h1>
+        <p class="value" id="temp">Temp: -- °C</p>
+        <p class="value" id="humidity">Humidity: -- %</p>
+        <p class="value" id="pressure">Pressure: -- mb</p>
+        <canvas id="chart" style="width:100%; height:200px; margin-top:1rem;"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const maxPoints = 10;
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Temperature (°C)', data: [], fill: false, tension: 0.2 }] },
+            options: {
+                animation: { duration: 500, easing: 'linear' },
+                scales: { y: { beginAtZero: false } }
+            }
+        });
+
+        async function fetchSensors() {
+            try {
+                const res = await fetch("/sensors");
+                const data = await res.json();
+                document.getElementById("temp").textContent =
+                    data.temperature !== null ? `Temp: ${data.temperature.toFixed(1)} °C` : "Temp: --";
+                document.getElementById("humidity").textContent =
+                    data.humidity !== null ? `Humidity: ${data.humidity.toFixed(1)} %` : "Humidity: --";
+                document.getElementById("pressure").textContent =
+                    data.pressure !== null ? `Pressure: ${data.pressure.toFixed(1)} mb` : "Pressure: --";
+
+                const now = new Date().toLocaleTimeString();
+                chart.data.labels.push(now);
+                chart.data.datasets[0].data.push(data.temperature);
+                if (chart.data.labels.length > maxPoints) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+                chart.update();
+            } catch (err) {
+                document.querySelectorAll(".value").forEach(el => {
+                    el.textContent = "Error";
+                    el.classList.add("error");
+                });
+            }
+        }
+
+        fetchSensors();
+        setInterval(fetchSensors, 5000);
+    </script>
+</body>
+</html>
