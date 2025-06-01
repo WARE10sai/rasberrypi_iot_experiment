@@ -21,12 +21,13 @@ Raspberry PiのSense HATセンサーからのデータ（温度、湿度、気�
 1. リポジトリをクローン:
 ```bash
 git clone <repository-url>
-cd rasberrypi_iot_experiment
+cd raspberrypi_iot_experiment
 ```
 
 2. 仮想環境を作成・有効化:
 ```bash
-python -m venv venv
+# システムのパッケージ（RTIMUなど）を仮想環境内で使用できるようにする
+python -m venv venv --system-site-packages
 source venv/bin/activate  # Linux/Mac
 # または
 venv\Scripts\activate     # Windows
@@ -35,8 +36,12 @@ venv\Scripts\activate     # Windows
 3. 依存関係をインストール:
 Raspberry Pi環境 (Sense HAT搭載):
 ```bash
+# システムパッケージをインストール
 sudo apt-get update
 sudo apt-get install -y sense-hat
+sudo apt-get install -y python3-rtimulib
+
+# Pythonパッケージをインストール
 pip install -r requirements.txt
 ```
 
@@ -122,3 +127,50 @@ raspberrypi_iot_experiment/
 - Raspberry Pi Foundationのドキュメントとコミュニティ
 - Sense HATライブラリの開発者の皆様
 - FastAPIフレームワークの開発チーム
+
+## トラブルシューティング
+
+### RTIMUモジュールが見つからないエラー
+
+`ModuleNotFoundError: No module named 'RTIMU'` というエラーが発生した場合、以下の方法を試してください：
+
+1. 既存の仮想環境を削除して、システムパッケージを利用する新しい仮想環境を作成:
+```bash
+# 仮想環境を抜ける
+deactivate
+# 既存の仮想環境を削除
+rm -rf venv
+# システムサイトパッケージを利用する仮想環境を作成
+python -m venv venv --system-site-packages
+# 仮想環境を有効化
+source venv/bin/activate
+# 依存関係をインストール
+pip install -r requirements.txt
+```
+
+2. または、仮想環境を使わずに直接実行:
+```bash
+# システム全体にパッケージをインストール
+sudo pip3 install -r requirements.txt
+# 仮想環境なしで実行
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### websocketsモジュールが見つからないエラー
+
+`ModuleNotFoundError: No module named 'websockets.legacy.handshake'` というエラーが発生した場合：
+
+```bash
+# websocketsパッケージを明示的にインストール
+pip install websockets>=10.0
+
+# uvicornを標準オプション付きで再インストール
+pip install uvicorn[standard]
+```
+
+または、requirements.txtを更新して再インストールすることもできます：
+
+```bash
+# requirements.txtの更新後、再度インストール
+pip install -r requirements.txt
+```
