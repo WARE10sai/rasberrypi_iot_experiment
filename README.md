@@ -33,8 +33,16 @@ venv\Scripts\activate     # Windows
 ```
 
 3. 依存関係をインストール:
+Raspberry Pi環境 (Sense HAT搭載):
 ```bash
+sudo apt-get update
+sudo apt-get install -y sense-hat
 pip install -r requirements.txt
+```
+
+開発環境 (Mac/Windowsなど) ではSense HATが不要:
+```bash
+pip install -r requirements-dev.txt
 ```
 
 ## 使用方法

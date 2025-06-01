@@ -10,4 +10,13 @@ flake8==6.1.0
 isort==5.12.0
 mypy==1.7.1
 pre-commit==3.5.0
-httpx==0.25.2 
+httpx==0.25.2
+
+# 開発環境用の依存関係
+fastapi>=0.68.0
+uvicorn>=0.15.0
+jinja2>=3.0.1
+aiofiles>=0.7.0
+python-multipart>=0.0.5
+sqlalchemy>=1.4.23
+# 開発環境ではsense-hatは不要 
