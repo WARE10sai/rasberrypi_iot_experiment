@@ -1,9 +1,0 @@
-# Don't index SpecStory auto-save files, but allow explicit context inclusion via @ references
-.specstory/**
-
-# Python virtual environment
-venv/
-
-# Python compiled files
-__pycache__/
-*.py[cod]
