@@ -8,9 +8,18 @@ from fastapi.templating import Jinja2Templates
 import os
 import sqlite3
 from datetime import datetime
-import colorsys
 
-from sensors.temp import sense, get_temperature, get_humidity, get_pressure
+# Import sensor reading functions
+from sensors.temp import get_temperature, get_humidity, get_pressure, get_all_sensor_data
+
+# Import LED display functions
+from sensors.led_display import (
+    update_led_display, 
+    clear_display, 
+    show_startup_pattern,
+    show_temperature_demo,
+    display_sensor_values_text
+)
 
 app = FastAPI()
 
@@ -37,6 +46,9 @@ templates = Jinja2Templates(
     directory=os.path.join(os.path.dirname(__file__), "web/templates")
 )
 
+# Show startup pattern on LED
+show_startup_pattern()
+
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
     """Render the main HTML page."""
@@ -44,7 +56,7 @@ def index(request: Request):
 
 @app.get("/sensors")
 def read_sensors():
-    """Return temperature, humidity, and pressure as JSON and update LED color by temperature."""
+    """Return temperature, humidity, and pressure as JSON and update LED display based on all sensor values."""
     temp = get_temperature()
     humidity = get_humidity()
     pressure = get_pressure()
@@ -61,12 +73,8 @@ def read_sensors():
     finally:
         conn.close()
 
-    # --- モダンなLED制御: 温度に応じたグラデーション (青→緑→赤) ---
-    if temp is not None:
-        # Normalize temperature between 0°C and 40°C
-        t_norm = max(0.0, min(temp, 40.0)) / 40.0
-        # Map to hue: 0.66 (blue) → 0.33 (green) → 0.0 (red)
-        hue = 0.66 * (1 - t_norm)
+    # --- LED表示を更新（温度、湿度、気圧すべてを使用） ---
+    update_led_display(temperature=temp, humidity=humidity, pressure=pressure)
 
     return {
         "temperature": temp,
@@ -92,3 +100,67 @@ def read_history(limit: int = 50):
         {"ts": ts, "temperature": temp, "humidity": hum, "pressure": pres}
         for ts, temp, hum, pres in rows
     ]
+
+@app.get("/led/clear")
+def clear_led():
+    """Clear the LED display."""
+    clear_display()
+    return {"status": "LED display cleared"}
+
+@app.get("/led/startup")
+def show_startup():
+    """Show startup pattern on LED display."""
+    show_startup_pattern()
+    return {"status": "Startup pattern displayed"}
+
+@app.get("/led/update")
+def manual_led_update():
+    """Manually update LED display with current sensor values."""
+    temp = get_temperature()
+    humidity = get_humidity()
+    pressure = get_pressure()
+    
+    update_led_display(temperature=temp, humidity=humidity, pressure=pressure)
+    
+    return {
+        "status": "LED display updated",
+        "temperature": temp,
+        "humidity": humidity,
+        "pressure": pressure
+    }
+
+@app.get("/led/demo")
+def show_temperature_color_demo():
+    """Show temperature color demonstration on LED display."""
+    show_temperature_demo()
+    return {"status": "Temperature color demo displayed"}
+
+@app.get("/led/text")
+def show_sensor_text():
+    """Display current sensor values as scrolling text on LED."""
+    temp = get_temperature()
+    humidity = get_humidity()
+    pressure = get_pressure()
+    
+    display_sensor_values_text(temp, humidity, pressure)
+    
+    return {
+        "status": "Sensor values displayed as text",
+        "temperature": temp,
+        "humidity": humidity,
+        "pressure": pressure
+    }
+
+@app.get("/sensors/all")
+def read_all_sensors():
+    """Return all sensor data in one call."""
+    sensor_data = get_all_sensor_data()
+    
+    # Update LED display
+    update_led_display(
+        temperature=sensor_data['temperature'],
+        humidity=sensor_data['humidity'],
+        pressure=sensor_data['pressure']
+    )
+    
+    return sensor_data
