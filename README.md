@@ -2,6 +2,17 @@
 
 Raspberry PiのSense HATセンサーからのデータ（温度、湿度、気圧）を提供するFastAPIベースのWebアプリケーションです。
 
+## デモ
+
+**Sense HATモニタリング画面のデモ映像**
+
+<p align="center">
+  <video controls width="600">
+    <source src="videos/sense_hat_monitor.mov" type="video/quicktime">
+    お使いのブラウザは動画タグに対応していません。
+  </video>
+</p>
+
 ## 機能
 
 - **リアルタイムセンサーデータ取得**: 温度、湿度、気圧の読み取り
