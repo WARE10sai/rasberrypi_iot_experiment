@@ -4,13 +4,12 @@ Raspberry PiのSense HATセンサーからのデータ（温度、湿度、気�
 
 ## デモ
 
-**Sense HATモニタリング画面のデモ映像**
+**デモ映像（クリックで再生）**
 
 <p align="center">
-  <video controls width="600">
-    <source src="videos/sense_hat_monitor.mov" type="video/quicktime">
-    お使いのブラウザは動画タグに対応していません。
-  </video>
+  <a href="videos/sense_hat_monitor.mov">
+    <img src="images/sense_hat_monitor.png" alt="Sense HATモニタリング画面のデモ映像" width="600" />
+  </a>
 </p>
 
 ## 機能
